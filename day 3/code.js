@@ -56,16 +56,14 @@ function part2(ogVals) {
   const lines = input.split('\n');
   const nLines = lines.length;
 
-  const vals = ogVals.map((val) => { 
+  let o2NVals = ogVals.map((val) => { 
     const avg = val / nLines;
     console.log(avg)
     if (avg > 0.5) 
       return "1";
-    else if (avg == 0.5) {
-      return "?"
-    }
     return "0";
   });
+  let co2NVals = o2NVals;
 
   let oxygenVals = new Set(lines);
   let co2Vals = new Set(lines);
@@ -76,20 +74,55 @@ function part2(ogVals) {
     for (const line of input.split('\n')) {
       const charArr = line.split("");
       
-
-      if (charArr[i] != vals[i]) {
+      if (charArr[i] != o2NVals[i]) {
         if (oxygenVals.size > 1) {
           oxygenVals.delete(line);
         }
-      } else {
-        if (co2Vals.size > 1) {
-          co2Vals.delete(line)
-        }
+      } 
+      if (charArr[i] == co2NVals[i] && co2Vals.size > 1) {
+          co2Vals.delete(line);
       }
       // console.log(line, charArr, vals);
     }
 
-    console.log(`o2`, oxygenVals, `co2`, co2Vals, i, `avg: `, vals[i]);
+    // determine most common bits
+    for (let i = 0; i < nChars; i++) {
+      o2NVals[i] = 0;
+      co2NVals[i] = 0;
+    }
+  
+    for (const val of Array.from(oxygenVals)) {
+      const charArr = val.split("");
+
+      for (let i = 0; i < charArr.length; i++) {
+        o2NVals[i] += parseInt(charArr[i]);
+      } 
+    }
+
+    for (const val of Array.from(co2Vals)) {
+      const charArr = val.split("");
+
+      for (let i = 0; i < charArr.length; i++) {
+        co2NVals[i] += parseInt(charArr[i]);
+      } 
+    }
+
+    console.log(`DEBUG`, o2NVals, co2NVals, oxygenVals, co2Vals, oxygenVals.size, co2Vals.size)
+    o2NVals = o2NVals.map((val) => { 
+      const avg = val / oxygenVals.size;
+      if (avg >= 0.5) 
+        return "1";
+      return "0";
+    });
+
+    co2NVals = co2NVals.map((val) => { 
+      const avg = val / co2Vals.size;
+      if (avg > 0.5) 
+        return "1";
+      return "0";
+    });
+  
+    console.log(`o2`, oxygenVals, `co2`, co2Vals, i, `o2 avg: `, o2NVals[i], `co2 avg`, co2NVals[i]);
   }
 
   console.log("O2 Vals")
@@ -101,8 +134,7 @@ function part2(ogVals) {
   const o2 = parseInt(Array.from(oxygenVals)[0].toString(), 2);
   const c02 = parseInt(Array.from(co2Vals)[0].toString(), 2);
 
-  console.log(`o2`, o2, `co2`, c02, `res`, c02 * o2)
+  console.log(`o2`, o2, `co2`, c02, `res`, c02 * o2);
 }
 
 part1();
-
